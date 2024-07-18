@@ -1,0 +1,5 @@
+- `cargo new` : make new project
+- `cargo build` : build project
+- `cargo build --release` : build release version project
+- `cargo run` : <strong>BUILD</strong> and run
+- `cargo check` : check project without creating binary
