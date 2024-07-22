@@ -1,3 +1,8 @@
+struct User {
+    username: String,
+    email: String,
+}
+
 fn main() {
     let x = String::from("TEST");
 
@@ -16,4 +21,14 @@ fn main() {
     let s2 = s1.clone();
 
     println!("s1 = {}, s2 = {}", s1, s2);
+
+    let user1 = User {
+        username: String::from("username1"),
+        email: String::from("email1"),
+    };
+
+    let user2 = User {
+        username: String::from("user212"),
+        ..user1
+    };
 }
