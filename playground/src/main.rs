@@ -1,3 +1,4 @@
+#[derive(Debug)]
 struct User {
     username: String,
     email: String,
@@ -31,4 +32,6 @@ fn main() {
         username: String::from("user212"),
         ..user1
     };
+
+    println!("{:?}", user2);
 }
