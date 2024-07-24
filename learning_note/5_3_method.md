@@ -71,3 +71,101 @@ Rust에는 이러한 기능을 하는 연산자는 존재하지 않는다. 자�
 이 기능이 존재할 수 있는 이유는 메서드의 수신자(`self`의 타입)가 명확하기 때문이다.
 
 수신자와 메서드명을 알면 해당 메서드가 인스턴스를 읽기만 하는지, 변경하는지, 소비하는지 알아낼 수 있기 때문이다.
+
+---
+
+### 더 많은 매개변수를 가진 메서드
+
+`Rectangle` 구조체에 또 다른 메서드를 구현해보자. 새 메서드는 다른 `Rectangle` 인스턴스를 받고, 현재 인스턴스의 면적 내에 인수로 받은 다른 `Rectangle`이 완전히 들어갈 수 있는지 판단한다.
+
+```rust
+fn main() {
+    let rect1 = Rectangle {
+        width: 30,
+        height: 50,
+    };
+    let rect2 = Rectangle {
+        width: 10,
+        height: 40,
+    };
+    let rect3 = Rectangle {
+        width: 60,
+        height: 45,
+    };
+
+    println!("Can rect1 hold rect2? {}", rect1.can_hold(&rect2));
+    println!("Can rect1 hold rect3? {}", rect1.can_hold(&rect3));
+}
+```
+
+`can_hold` 메서드가 잘 구현되면, 위 코드는 아래와 같이 출력될 것이다.
+
+```
+Can rect1 hold rect2? true
+Can rect1 hold rect3? false
+```
+
+배운 내용대로, `impl Rectangle` 블록 내에 선언하고, 메서드 명은 `can_hold`로 작성할 것이다.
+
+매개변수 타입은 샘플 코드의 호출부를 보면 알 수 있는데, `Rectangle` 인스턴스의 불변 참조자를 전달했으니 `&Rectangle` 타입이 될 것으로 유추할 수 있다.
+
+반환 타입은 `bool` 타입이 될 것이다.
+
+```rust
+impl Rectangle {
+    fn area(&self) -> u32 {
+        self.width * self.height
+    }
+
+    fn can_hold(&self, other: &Rectangle) -> bool {
+        self.width > other.width && self.height > other.height
+    }
+}
+```
+
+이제 원하던 출력 결과를 얻을 수 있고, `self` 이외의 여러 매개변수를 추가할 수 있음을 알게되었다.
+
+### 연관 함수
+
+`impl` 블록 내에 구현된 모든 함수를 연관 함수(associated function)이라고 부르는데, 이는 `impl` 키워드 뒤에 나오는 타입(현재까지는 `Rectangle`을 주로 다뤘다.)과 모두 연관된 함수이기 때문이다.
+
+만약 동작하는데에 해당 타입의 인스턴스가 필요하지 않다면 `self`를 매개변수로 갖지 않는 (따라서 메서드가 아니게 된다.) 연관 함수를 정의할 수도 있다.
+
+우리는 `String::from` 함수로 이미 연관 함수를 사용해봤다.
+
+---
+
+메서드가 아닌 연관 함수는 구조체의 새 인스턴스를 반환하는 생성자로 자주 활용된다.
+
+이 함수들은 보통 `new`라는 이름을 가진다. (Rust에서는 키워드가 아니다. 그저 보편적으로 사용하는 생성자 이름이다.)
+
+치수 하나를 매개변수로 받아 정사각형 `Rectangle`을 생성하는 `square` 연관 함수를 만들어보자.
+
+```rust
+impl Rectangle {
+    fn square(size: u32) -> Self {
+        Self {
+            width: size,
+            height: size,
+        }
+    }
+}
+```
+
+`Self` 키워드는 `impl` 키워드 뒤의 타입의 별칭으로 자동으로 `Rectangle`이 된다.
+
+연관 함수를 호출할 때는 `let sq = Rectangle::square(3);` 처럼 구조체 명에 `::` 구문을 붙여 호출한다.
+
+### 여러 개의 `impl` 블록
+
+각 구조체는 여러 개의 `impl` 블록을 가질 수 있다.
+
+여러 `impl` 블록을 유용하게 사용하는 경우는 제네릭 타입, 트레이트 등으로 10장에서 학습하도록 하자.
+
+### 정리
+
+구조체를 사용하면 도메인에 의미있는 커스텀 타입을 만들 수 있다.
+
+또한, 구조체를 사용함으로 서로 관련있는 데이터를 하나로 묶어 관리하거나, 데이터에 이름을 붙여 명확하게 만들 수 있다.
+
+`impl` 블록 내부에는 타입과 관련된 연관 함수, 메서드를 정의하여 인스턴스가 가질 동작을 명시할 수 있다.
